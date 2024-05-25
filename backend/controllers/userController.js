@@ -10,8 +10,6 @@ const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d", // Token expiry
   });
-  console.log("Generated Token:", token); // Log the generated token
-  return token;
 };
 
 // Login user
@@ -40,7 +38,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, isAdmin } = req.body;
   try {
     // Check if user already exists
     const exists = await User.findOne({ email });
@@ -66,7 +64,12 @@ const registerUser = asyncHandler(async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      isAdmin,
+    });
     const user = await newUser.save();
     const token = createToken(user._id);
     res.json({ success: true, token });
