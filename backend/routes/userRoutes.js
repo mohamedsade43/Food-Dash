@@ -5,6 +5,9 @@ import {
   getUserProfile,
   updateUserProfile,
   getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
 } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { admin } from "../middleware/adminMiddleware.js";
@@ -190,9 +193,93 @@ router
  *                     type: boolean
  *       401:
  *         description: Not authorized
+ *   post:
+ *     summary: Create a new user
+ *     tags: [Auth]
+ *     security:
+ *       - Bearer: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               isAdmin:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       401:
+ *         description: Not authorized
  */
-router.route("/").get(authMiddleware, admin, getUsers);
+router
+  .route("/")
+  .get(authMiddleware, admin, getUsers)
+  .post(authMiddleware, admin, createUser);
 
-// console.log(admin);
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Update user
+ *     tags: [Auth]
+ *     security:
+ *       - Bearer: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               isAdmin:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       401:
+ *         description: Not authorized
+ *   delete:
+ *     summary: Delete user
+ *     tags: [Auth]
+ *     security:
+ *       - Bearer: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       401:
+ *         description: Not authorized
+ */
+router
+  .route("/:id")
+  .put(authMiddleware, admin, updateUser)
+  .delete(authMiddleware, admin, deleteUser);
 
 export default router;

@@ -5,8 +5,8 @@ import User from "../models/userModel.js";
 const authMiddleware = asyncHandler(async (req, res, next) => {
   let token;
 
-  console.log("Headers:", req.headers); // Debugging log
-  console.log("Cookies:", req.cookies); // Debugging log
+  // console.log("Headers:", req.headers); // Debugging log
+  // console.log("Cookies:", req.cookies); // Debugging log
 
   if (
     req.headers.authorization &&
@@ -23,9 +23,9 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    console.log("JWT_SECRET (authMiddleware):", process.env.JWT_SECRET); // Log the secret
+    // console.log("JWT_SECRET (authMiddleware):", process.env.JWT_SECRET); // Log the secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded Token:", decoded); // Debugging log
+    // console.log("Decoded Token:", decoded); // Debugging log
 
     req.user = await User.findById(decoded.id).select("-password");
 
