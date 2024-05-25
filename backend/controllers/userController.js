@@ -39,10 +39,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
+<<<<<<< HEAD
   const { name, email, password, isAdmin, adminKey } = req.body;
 
   const ADMIN_REGISTRATION_KEY = process.env.ADMIN_REGISTRATION_KEY;
 
+=======
+  const { name, email, password, isAdmin } = req.body;
+>>>>>>> 3cd42b70e00c96855e26c00351aaaec5c3952f02
   try {
     // Check if user already exists
     const exists = await User.findOne({ email });

@@ -17,13 +17,13 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: Auth
+ *   name: Users
  *   description: Authentication API
  */
 
 /**
  * @swagger
- * /api/auth/login:
+ * /api/users/login:
  *   post:
  *     summary: Login user
  *     tags: [Auth]
@@ -59,7 +59,7 @@ router.post("/login", loginUser);
 
 /**
  * @swagger
- * /api/auth/register:
+ * /api/users/register:
  *   post:
  *     summary: Register user
  *     tags: [Auth]

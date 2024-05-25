@@ -5,6 +5,10 @@ import User from "../models/userModel.js";
 const authMiddleware = asyncHandler(async (req, res, next) => {
   let token;
 
+<<<<<<< HEAD
+=======
+  // console.log("HERE: "+req.headers.authorization)
+>>>>>>> 3cd42b70e00c96855e26c00351aaaec5c3952f02
   // console.log("Headers:", req.headers); // Debugging log
   // console.log("Cookies:", req.cookies); // Debugging log
 
