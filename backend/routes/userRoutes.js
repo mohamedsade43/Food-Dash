@@ -5,6 +5,9 @@ import {
   getUserProfile,
   updateUserProfile,
   getUsers,
+  forgotPassword,
+  resetPassword,
+  getResetPasswordToken,
 } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { admin } from "../middleware/adminMiddleware.js";
@@ -193,6 +196,9 @@ router
  */
 router.route("/").get(authMiddleware, admin, getUsers);
 
-// console.log(admin);
+
+router.post("/forgot-password",forgotPassword)
+router.get("/reset-password/:token",getResetPasswordToken)
+router.post("/reset-password",resetPassword)
 
 export default router;
