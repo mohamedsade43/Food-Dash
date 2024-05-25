@@ -1,8 +1,10 @@
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
+import { sendPasswordResetEmail } from "../utils/sendEmail.js";
 import mongoose from "mongoose";
 
 // Create token
@@ -39,14 +41,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
-<<<<<<< HEAD
   const { name, email, password, isAdmin, adminKey } = req.body;
 
   const ADMIN_REGISTRATION_KEY = process.env.ADMIN_REGISTRATION_KEY;
 
-=======
-  const { name, email, password, isAdmin } = req.body;
->>>>>>> 3cd42b70e00c96855e26c00351aaaec5c3952f02
   try {
     // Check if user already exists
     const exists = await User.findOne({ email });
@@ -244,11 +242,84 @@ const getUsers = asyncHandler(async (req, res) => {
   // console.log(getUsers);
 });
 
+const generateResetToken = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+const forgotPassword = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const resetToken = generateResetToken();
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
+    await user.save();
+
+    await sendPasswordResetEmail(user, user.resetPasswordToken);
+
+    res.status(200).json({ message: "Password reset email sent", resetToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+const getResetPasswordToken = expressAsyncHandler(async (req, res) => {
+  const { token } = req.params;
+
+  // Serve a simple HTML form for password reset
+  res.send(`
+      <form action="/reset-password" method="POST">
+        <input type="hidden" name="token" value="${token}" />
+        <label for="newPassword">New Password:</label>
+        <input type="password" name="newPassword" required />
+        <button type="submit">Reset Password</button>
+      </form>
+    `);
+});
+
+const resetPassword = expressAsyncHandler(async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Password reset token is invalid or has expired" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password has been reset" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 export {
   loginUser,
   registerUser,
   getUserProfile,
   updateUserProfile,
+  getUsers,
+  forgotPassword,
+  getResetPasswordToken,
+  resetPassword,
   createUser,
   updateUser,
   deleteUser,

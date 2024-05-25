@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// const databaseUri = "mongodb://127.0.0.1:27017/food-delivery"
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI);
