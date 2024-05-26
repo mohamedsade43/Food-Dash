@@ -246,7 +246,7 @@ const generateResetToken = () => {
   return crypto.randomBytes(32).toString("hex");
 };
 
-const forgotPassword = expressAsyncHandler(async (req, res) => {
+const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -269,7 +269,7 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
   }
 });
 
-const getResetPasswordToken = expressAsyncHandler(async (req, res) => {
+const getResetPasswordToken = asyncHandler(async (req, res) => {
   const { token } = req.params;
 
   // Serve a simple HTML form for password reset
@@ -283,7 +283,7 @@ const getResetPasswordToken = expressAsyncHandler(async (req, res) => {
     `);
 });
 
-const resetPassword = expressAsyncHandler(async (req, res) => {
+const resetPassword = asyncHandler(async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
@@ -323,5 +323,4 @@ export {
   createUser,
   updateUser,
   deleteUser,
-  getUsers,
 };

@@ -41,7 +41,7 @@ const Header = () => {
                 className="flex items-center space-x-2 focus:outline-none"
                 onClick={toggleDropdown}
               >
-                <span>{userInfo.user.name}</span>
+                <span>{userInfo && userInfo?.user?.name}</span>
                 <svg
                   className={`w-4 h-4 fill-current transform ${
                     dropdownOpen ? "rotate-180" : ""
