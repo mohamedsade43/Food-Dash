@@ -7,73 +7,42 @@ import mongoose from "mongoose";
 
 // Create token
 const createToken = (id) => {
-  console.log("JWT_SECRET (createToken):", process.env.JWT_SECRET); // Log the secret
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d", // Token expiry
   });
 };
-
-// Login user
-const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.json({ success: false, message: "User does not exist" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.json({ success: false, message: "Invalid credentials" });
-    }
-
-    const token = createToken(user._id);
-    res.json({ success: true, token });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
-  }
-});
-
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
-<<<<<<< HEAD
   const { name, email, password, isAdmin, adminKey } = req.body;
 
   const ADMIN_REGISTRATION_KEY = process.env.ADMIN_REGISTRATION_KEY;
 
-=======
-  const { name, email, password, isAdmin } = req.body;
->>>>>>> 3cd42b70e00c96855e26c00351aaaec5c3952f02
   try {
     // Check if user already exists
     const exists = await User.findOne({ email });
     if (exists) {
-      return res.json({ success: false, message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
     }
 
     // Validate email format & strong password
     if (!validator.isEmail(email)) {
-      return res.json({
-        success: false,
-        message: "Please enter a valid email",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter a valid email" });
     }
     if (password.length < 8) {
-      return res.json({
-        success: false,
-        message: "Please enter a strong password",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter a strong password" });
     }
 
     // Validate admin registration key if isAdmin is true
     if (isAdmin && adminKey !== ADMIN_REGISTRATION_KEY) {
-      return res.json({
-        success: false,
-        message: "Invalid admin registration key",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid admin registration key" });
     }
 
     // Hashing user password
@@ -87,17 +56,65 @@ const registerUser = asyncHandler(async (req, res) => {
       isAdmin,
     });
     const user = await newUser.save();
+
     const token = createToken(user._id);
-    res.json({ success: true, token });
+
+    res.status(201).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+      token,
+    });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Login user
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User does not exist" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+
+    const token = createToken(user._id);
+    res.json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
 // Get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user);
+  const user = await User.findById(req.user.id);
 
   if (user) {
     res.json({
@@ -107,14 +124,13 @@ const getUserProfile = asyncHandler(async (req, res) => {
       isAdmin: user.isAdmin,
     });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    res.status(404).json({ message: "User not found" });
   }
 });
 
 // Update user profile
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user);
+  const user = await User.findById(req.user.id);
 
   if (user) {
     user.name = req.body.name || user.name;
@@ -130,12 +146,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
+      // isAdmin: updatedUser.isAdmin,
       token: createToken(updatedUser._id),
     });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    res.status(404).json({ message: "User not found" });
   }
 });
 
@@ -175,10 +190,22 @@ const createUser = asyncHandler(async (req, res) => {
       isAdmin,
     });
     const user = await newUser.save();
-    res.status(201).json({ success: true, user });
+
+    const token = createToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+      token,
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Error creating user" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
@@ -188,6 +215,10 @@ const updateUser = asyncHandler(async (req, res) => {
 
   // Log the received ID for debugging
   console.log("Received ID:", userId);
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID format" });
+  }
 
   const user = await User.findById(userId);
 
@@ -209,22 +240,30 @@ const updateUser = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
+      token: createToken(updatedUser._id),
     });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    res.status(404).json({ message: "User not found" });
   }
 });
 
-// Delete user (admin only)
+// Logout user
+const logoutUser = async (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
 
+  res.status(200).json({ message: "Logout User" });
+};
+
+// Delete user (admin only)
 const deleteUser = asyncHandler(async (req, res) => {
   const userId = req.params.id;
 
   // Validate the format of the user ID
   if (!mongoose.Types.ObjectId.isValid(userId)) {
-    res.status(400);
-    throw new Error("Invalid user ID format");
+    return res.status(400).json({ message: "Invalid user ID format" });
   }
 
   const user = await User.findByIdAndDelete(userId);
@@ -232,8 +271,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   if (user) {
     res.json({ success: true, message: "User removed" });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    res.status(404).json({ message: "User not found" });
   }
 });
 
@@ -241,11 +279,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
   res.json(users);
-  // console.log(getUsers);
 });
 
 export {
   loginUser,
+  logoutUser,
   registerUser,
   getUserProfile,
   updateUserProfile,
@@ -254,3 +292,6 @@ export {
   deleteUser,
   getUsers,
 };
+
+
+

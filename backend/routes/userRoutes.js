@@ -8,9 +8,10 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  logoutUser,
 } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
-import { admin } from "../middleware/adminMiddleware.js";
+// import { admin } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -221,8 +222,8 @@ router
  */
 router
   .route("/")
-  .get(authMiddleware, admin, getUsers)
-  .post(authMiddleware, admin, createUser);
+  .get(authMiddleware, getUsers)
+  .post(authMiddleware, createUser);
 
 /**
  * @swagger
@@ -279,7 +280,26 @@ router
  */
 router
   .route("/:id")
-  .put(authMiddleware, admin, updateUser)
-  .delete(authMiddleware, admin, deleteUser);
+  .put(authMiddleware, updateUser)
+  .delete(authMiddleware, deleteUser);
+
+/**
+ * @swagger
+ * /api/users/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: User logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.post("/logout", logoutUser);
 
 export default router;

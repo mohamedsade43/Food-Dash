@@ -80,6 +80,6 @@ router.post("/add", upload.single("image"), addFood);
  *       500:
  *         description: Error removing food item
  */
-router.delete("/remove", removeFood);
+router.delete("/:id", removeFood);
 
 export default router;

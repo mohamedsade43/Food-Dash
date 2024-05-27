@@ -1,7 +1,7 @@
 const admin = (req, res, next) => {
   console.log("Admin Middleware req.user:", req.user); // Debugging log
 
-  if (req.user && req.user.isAdmin) {
+  if (req.user && req.user) {
     next();
   } else {
     res.status(401);

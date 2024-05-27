@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Hero from "./components/Hero";
 import ProfileScreen from "./screens/ProfileScreen";
+import FoodList from "./components/FoodList";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Hero />} />
         <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/food-list" element={<FoodList />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
       </Routes>
