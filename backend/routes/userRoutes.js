@@ -5,6 +5,9 @@ import {
   getUserProfile,
   updateUserProfile,
   getUsers,
+  forgotPassword,
+  resetPassword,
+  getResetPasswordToken,
   createUser,
   updateUser,
   deleteUser,
@@ -225,6 +228,9 @@ router
   .get(authMiddleware, getUsers)
   .post(authMiddleware, createUser);
 
+router.post("/forgot-password",forgotPassword)
+router.get("/reset-password/:token",getResetPasswordToken)
+router.post("/reset-password",resetPassword)
 /**
  * @swagger
  * /api/users/{id}:

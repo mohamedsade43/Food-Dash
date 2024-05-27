@@ -12,7 +12,6 @@ import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
-
 const app = express();
 const port = process.env.PORT || 5000;
 
