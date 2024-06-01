@@ -1,5 +1,8 @@
 import { apiSlice } from "./apiSlice";
 const USERS_URL = "/api/users";
+const FOOD_URL = "/api/foods";
+const ORDER_URL = "/api/orders";
+const CART_URL = "/api/carts";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -23,7 +26,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
-
     updateUser: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/profile`,
@@ -33,8 +35,56 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     forgotUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/forgot-password`,
+        url: `${USERS_URL}/forgot-password
+    addFood: builder.mutation({
+      query: (data) => ({
+        url: `${FOOD_URL}/add`,
         method: "POST",
+        body: data,
+      }),
+    }),
+    getFood: builder.query({
+      query: () => ({
+        url: `${FOOD_URL}`,
+        method: "GET",
+      }),
+    }),
+    deleteFood: builder.mutation({
+      query: (id) => ({
+        url: `${FOOD_URL}/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    placeOrder: builder.mutation({
+      query: (data) => ({
+        url: `${ORDER_URL}/place`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getOrder: builder.query({
+      query: (id) => ({
+        url: `${ORDER_URL}/${id}`,
+        method: "GET",
+      }),
+    }),
+    addToCart: builder.mutation({
+      query: (data) => ({
+        url: `${CART_URL}/add`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getCart: builder.query({
+      query: (userId) => ({
+        url: `${CART_URL}/${userId}`,
+        method: "GET",
+      }),
+    }),
+    removeFromCart: builder.mutation({
+      query: (data) => ({
+        url: `${CART_URL}/remove`,
+        method: "DELETE",
         body: data,
       }),
     }),
@@ -43,8 +93,17 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useLogoutMutation,
   useRegisterMutation,
   useUpdateUserMutation,
   useForgotUserMutation,
   useLogoutMutation,
+  useAddFoodMutation,
+  useGetFoodQuery,
+  useDeleteFoodMutation,
+  usePlaceOrderMutation,
+  useGetOrderQuery,
+  useAddToCartMutation,
+  useGetCartQuery,
+  useRemoveFromCartMutation,
 } = usersApiSlice;
