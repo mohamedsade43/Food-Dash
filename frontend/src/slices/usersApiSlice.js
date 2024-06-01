@@ -33,6 +33,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    forgotUser: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/forgot-password
     addFood: builder.mutation({
       query: (data) => ({
         url: `${FOOD_URL}/add`,
@@ -93,6 +96,8 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useUpdateUserMutation,
+  useForgotUserMutation,
+  useLogoutMutation,
   useAddFoodMutation,
   useGetFoodQuery,
   useDeleteFoodMutation,
