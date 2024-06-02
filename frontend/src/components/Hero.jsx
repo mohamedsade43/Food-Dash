@@ -1,35 +1,39 @@
-import { Link } from "react-router-dom";
+import React from "react";
+import Right from "../components/icons/Right";
+import pizza from "../assets/pizza.png"; // Ensure the path and extension are correct
 
-const Hero = () => {
+function Hero() {
   return (
-    <div className="hero-section py-16 bg-gradient-to-r from-blue-500 to-purple-500">
-      <div className="container mx-auto flex justify-center">
-        <div className="p-8 bg-white rounded-lg shadow-2xl flex flex-col items-center text-center hero-card">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-6">
-            MERN Eats App
-          </h1>
-          <p className="text-gray-700 mb-8">
-            Welcome to MERN Eats, a food delivery app built with the MERN stack.
-            It uses JWT for authentication stored in HTTP-Only cookies and
-            leverages Redux Toolkit for state management. Enjoy seamless and
-            secure food ordering with MERN Eats.
-          </p>
-          <div className="flex space-x-4">
-            <Link to="/login">
-              <button className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 custom-button">
-                Sign In
-              </button>
-            </Link>
-            <Link to="/register">
-              <button className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg border border-blue-600 shadow-md hover:bg-gray-100 transition duration-300 custom-button">
-                Register
-              </button>
-            </Link>
-          </div>
+    <section className="hero flex flex-col md:flex-row items-center justify-between md:mt-4 px-4 md:px-8 lg:px-16">
+      <div className="py-8 md:py-12 md:w-1/2 relative left-10">
+        <h1 className="text-6xl leading-tight font-bold">
+          Everything
+          <br />
+          is better
+          <br />
+          with a&nbsp;
+          <span className="text-primary">Pizza</span>
+        </h1>
+        <p className="my-6 text-gray-500 text-sm md:text-base lg:text-lg font-semibold">
+          Pizza is the missing piece that makes every day complete, a simple yet
+          delicious joy in life.
+        </p>
+        <div className="flex gap-4 text-sm md:text-base">
+          <button className="flex justify-center bg-primary uppercase items-center gap-2 text-white px-6 py-3 rounded-full shadow-lg transform transition-transform hover:scale-105">
+            Order now
+            <Right />
+          </button>
+          <button className="flex items-center border-2 border-primary text-primary gap-2 px-6 py-3 rounded-full font-semibold transform transition-transform hover:scale-105">
+            Learn more
+            <Right />
+          </button>
         </div>
       </div>
-    </div>
+      <div className="relative hidden md:block md:w-1/2 lg:w-2/5 right-10 ">
+        <img src={pizza} alt="Pizza" className="w-full h-auto object-contain" />
+      </div>
+    </section>
   );
-};
+}
 
 export default Hero;
