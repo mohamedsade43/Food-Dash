@@ -13,7 +13,7 @@ const listFood = async (req, res) => {
     }));
 
     res.json({ success: true, data: foodsWithImages });
-    console.log(res.foods)
+    console.log(res.foods);
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "Error" });

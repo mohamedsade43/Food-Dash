@@ -15,6 +15,8 @@ import {
 } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 // import { admin } from "../middleware/adminMiddleware.js";
+import uploads from "../middleware/uploadMiddleware.js";
+import path from "path";
 
 const router = express.Router();
 
@@ -97,7 +99,7 @@ router.post("/login", loginUser);
  *       400:
  *         description: Invalid input
  */
-router.post("/register", registerUser);
+router.post("/register", uploads.single("profilePicture"), registerUser);
 
 /**
  * @swagger
@@ -228,9 +230,9 @@ router
   .get(authMiddleware, getUsers)
   .post(authMiddleware, createUser);
 
-router.post("/forgot-password",forgotPassword)
-router.get("/reset-password/:token",getResetPasswordToken)
-router.post("/reset-password",resetPassword)
+router.post("/forgot-password", forgotPassword);
+router.get("/reset-password/:token", getResetPasswordToken);
+router.post("/reset-password", resetPassword);
 /**
  * @swagger
  * /api/users/{id}:

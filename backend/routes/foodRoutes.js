@@ -1,4 +1,3 @@
-// foodRoutes.js
 import express from "express";
 import {
   listFood,
@@ -8,6 +7,9 @@ import {
 import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
+
+// Serve static files from the "uploads" directory
+router.use("/uploads", express.static("uploads"));
 
 /**
  * @swagger

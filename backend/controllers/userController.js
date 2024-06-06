@@ -16,6 +16,7 @@ const createToken = (id) => {
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, isAdmin, adminKey } = req.body;
+  const profilePicture = req.file ? req.file.path : null;
 
   const ADMIN_REGISTRATION_KEY = process.env.ADMIN_REGISTRATION_KEY;
 
@@ -54,6 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const newUser = new User({
       name,
       email,
+      profilePicture,
       password: hashedPassword,
       isAdmin,
     });
@@ -67,6 +69,7 @@ const registerUser = asyncHandler(async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        profilePicture: user.profilePicture,
         isAdmin: user.isAdmin,
       },
       token,
@@ -221,7 +224,6 @@ const updateUser = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user ID format" });
   }
-
   const user = await User.findById(userId);
 
   if (user) {
@@ -366,6 +368,3 @@ export {
   updateUser,
   deleteUser,
 };
-
-
-
