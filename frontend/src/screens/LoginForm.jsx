@@ -58,6 +58,17 @@ const LoginForm = () => {
             />
           </div>
           <div>
+            <div className="flex justify-between">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <Link
+                to={"/forgot-password"}
+                className="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline transition-all duration-300 ease-in-out px-2 py-1"
+              >
+                Forgot Password
+              </Link>
+            </div>
             <input
               type="password"
               value={password}

@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { FaSignInAlt, FaSignOutAlt, FaShoppingCart } from "react-icons/fa";
+import {
+  FaSignInAlt,
+  FaSignOutAlt,
+  FaShoppingCart,
+  FaUserCircle,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
@@ -7,6 +12,7 @@ import { logout } from "../slices/authSlice";
 
 const Header = () => {
   const totalQuantity = useSelector((state) => state.cart.totalQuantity);
+
 
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -51,14 +57,25 @@ const Header = () => {
           <Link to="/contact" className="hover:text-primary transition-colors">
             Contact
           </Link>
-
+          <Link to="/cart" className="relative">
+            <FaShoppingCart className="text-primary" size={24} />
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+              {totalQuantity}
+            </span>
+          </Link>
           {userInfo ? (
             <div className="relative">
               <button
                 className="flex items-center space-x-2 focus:outline-none"
                 onClick={toggleDropdown}
               >
-                <span className="font-semibold">{userInfo?.user?.name}</span>
+                <div className="flex items-center space-x-2">
+                  <FaUserCircle
+                    size={32}
+                    className="border border-primary rounded-full"
+                  />
+                  <span>{userInfo.user.name}</span>
+                </div>
                 <svg
                   className={`w-5 h-5 fill-current transform ${
                     dropdownOpen ? "rotate-180" : ""
@@ -70,7 +87,7 @@ const Header = () => {
                 </svg>
               </button>
               {dropdownOpen && (
-                <div className="absolute bg-backround shadow-2xl text-text right-0 mt-2 w-48  rounded-md  z-20">
+                <div className="absolute bg-background shadow-2xl text-text right-0 mt-2 w-48 rounded-md z-20">
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-sm hover:bg-primary"
@@ -103,13 +120,6 @@ const Header = () => {
                 className="bg-background border border-red-500 rounded-full text-white px-6 py-2 hover:bg-orange-600 transition-colors"
               >
                 Register
-              </Link>
-
-              <Link to="/cart" className="relative">
-                <FaShoppingCart className="text-primary" size={24} />
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
-                  {totalQuantity}
-                </span>
               </Link>
             </>
           )}

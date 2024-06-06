@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginForm from "./screens/LoginForm";
 import RegisterForm from "./screens/RegistrationForm";
@@ -7,6 +6,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./components/Home";
 import ProfileScreen from "./screens/ProfileScreen";
+
+import ForgotPassword from "./screens/ForgotPassword";
 import FoodList from "./components/FoodList";
 import Cart from "./components/Cart";
 import ContactForm from "./components/ContactForm";

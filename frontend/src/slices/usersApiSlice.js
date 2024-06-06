@@ -3,6 +3,7 @@ const USERS_URL = "/api/users";
 const FOOD_URL = "/api/foods";
 const ORDER_URL = "/api/orders";
 const CART_URL = "/api/carts";
+const FOOD_IMAGE = "/api/foods/uploads";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -46,6 +47,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getImage: builder.mutation({
+      endpoint: (builder) => ({
+        url: `${FOOD_IMAGE}/image`,
+        method: "GET",
+      }),
+    }),
+
     deleteFood: builder.mutation({
       query: (id) => ({
         url: `${FOOD_URL}/${id}`,
@@ -101,4 +109,5 @@ export const {
   useAddToCartMutation,
   useGetCartQuery,
   useRemoveFromCartMutation,
+  useForgotUserMutation,
 } = usersApiSlice;

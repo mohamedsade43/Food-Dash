@@ -22,8 +22,8 @@ const ProfileScreen = () => {
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
   useEffect(() => {
-    setName(userInfo.user.name);
-    setEmail(userInfo.user.email);
+    setName(userInfo.name);
+    setEmail(userInfo.email);
   }, [userInfo]);
 
   const submitHandler = async (e) => {
@@ -33,7 +33,7 @@ const ProfileScreen = () => {
     } else {
       try {
         const res = await updateProfile({
-          _id: userInfo.user._id,
+          _id: userInfo._id,
           name,
           email,
           password,
@@ -48,66 +48,76 @@ const ProfileScreen = () => {
 
   return (
     <>
-    <Header />
-   
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <div className="w-full max-w-sm p-8 space-y-6 bg-background rounded-lg shadow-2xl">
-        <h2 className="text-3xl font-bold text-center text-red-600">
-          Update Profile
-        </h2>
-        <form onSubmit={submitHandler} className="space-y-4">
-          <div>
-            <input
-              type="text"
-              id="name"
-              placeholder="Enter your name"
-              value={name}
-              autoComplete="username"
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              id="confirmPassword"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          {isLoading && <Loader />}
-          <button
-            type="submit"
-            className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Update
-          </button>
-        </form>
+      <Header />
+      <div className="flex items-center justify-center min-h-screen bg-background p-4">
+        <div className="w-full max-w-sm p-8 space-y-6 bg-background rounded-lg shadow-2xl">
+          <h2 className="text-3xl font-bold text-center text-red-600">
+            Update Profile
+          </h2>
+          <form onSubmit={submitHandler} className="space-y-4">
+            <div className="flex justify-center">
+              {userInfo.user.profilePicture ? (
+                <img
+                  src={userInfo.profilePicture}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gray-200" />
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+                value={name}
+                autoComplete="username"
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+            <div>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+            {isLoading && <Loader />}
+            <button
+              type="submit"
+              className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Update
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };
