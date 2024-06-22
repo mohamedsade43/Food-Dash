@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "https://food-dash-xw1r.onrender.com",
+        target: "https://food-dash-backend.onrender.com",
         changeOrigin: true,
       },
     },
