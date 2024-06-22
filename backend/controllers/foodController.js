@@ -22,9 +22,6 @@ const listFood = async (req, res) => {
 
 // add food
 const addFood = async (req, res) => {
-  console.log("Request Body:", req.body);
-  console.log("Uploaded File:", req.file);
-
   if (!req.file) {
     return res.json({ success: false, message: "No file uploaded" });
   }
@@ -77,4 +74,53 @@ const removeFood = async (req, res) => {
   }
 };
 
-export { listFood, addFood, removeFood };
+// update food
+const updateFood = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const food = await foodModel.findById(id);
+    if (!food) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Food item not found" });
+    }
+
+    // Update the food fields
+    food.name = req.body.name || food.name;
+    food.description = req.body.description || food.description;
+    food.price = req.body.price || food.price;
+    food.category = req.body.category || food.category;
+
+    if (req.file) {
+      // Delete the old image file if it exists
+      if (food.image) {
+        fs.unlink(`uploads/${food.image}`, (err) => {
+          if (err) {
+            console.error("Error deleting old image file:", err);
+          }
+        });
+      }
+      // Update the image with the new file
+      food.image = req.file.filename;
+    }
+
+    await food.save();
+    res.json({ success: true, message: "Food Updated", data: food });
+  } catch (error) {
+    console.log("Error updating food:", error);
+    res.status(500).json({ success: false, message: "Error updating food" });
+  }
+};
+
+//get category
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({});
+    res.json({ success: true, data: categories });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+export { listFood, addFood, removeFood, updateFood, getCategories };

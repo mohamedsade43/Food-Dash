@@ -8,15 +8,15 @@ import {
   forgotPassword,
   resetPassword,
   getResetPasswordToken,
+  googleLogin,
   createUser,
   updateUser,
   deleteUser,
   logoutUser,
 } from "../controllers/userController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-// import { admin } from "../middleware/adminMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { admin } from "../middleware/adminMiddleware.js";
 import uploads from "../middleware/uploadMiddleware.js";
-import path from "path";
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ const router = express.Router();
  * /api/users/login:
  *   post:
  *     summary: Login user
- *     tags: [Auth]
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -65,14 +65,48 @@ router.post("/login", loginUser);
 
 /**
  * @swagger
- * /api/users/register:
+ * /api/users/google-login:
  *   post:
- *     summary: Register user
- *     tags: [Auth]
+ *     summary: Google login user
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tokenId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User logged in successfully with Google
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 token:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid input
+ */
+router.post("/google-login", googleLogin);
+
+/**
+ * @swagger
+ * /api/users/register:
+ *   post:
+ *     summary: Register user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -82,6 +116,13 @@ router.post("/login", loginUser);
  *                 type: string
  *               password:
  *                 type: string
+ *               isAdmin:
+ *                 type: boolean
+ *               adminKey:
+ *                 type: string
+ *               profilePicture:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -106,9 +147,9 @@ router.post("/register", uploads.single("profilePicture"), registerUser);
  * /api/users/profile:
  *   get:
  *     summary: Get user profile
- *     tags: [Auth]
+ *     tags: [Users]
  *     security:
- *       - Bearer: []
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: User profile fetched successfully
@@ -129,9 +170,9 @@ router.post("/register", uploads.single("profilePicture"), registerUser);
  *         description: Not authorized
  *   put:
  *     summary: Update user profile
- *     tags: [Auth]
+ *     tags: [Users]
  *     security:
- *       - Bearer: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +209,17 @@ router.post("/register", uploads.single("profilePicture"), registerUser);
  */
 router
   .route("/profile")
-  .get(authMiddleware, getUserProfile)
-  .put(authMiddleware, updateUserProfile);
+  .get(protect, getUserProfile) // Only authenticated users can access their profile
+  .put(protect, updateUserProfile); // Only authenticated users can update their profile
 
 /**
  * @swagger
  * /api/users:
  *   get:
  *     summary: Get all users
- *     tags: [Auth]
+ *     tags: [Users]
  *     security:
- *       - Bearer: []
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Users fetched successfully
@@ -201,9 +242,9 @@ router
  *         description: Not authorized
  *   post:
  *     summary: Create a new user
- *     tags: [Auth]
+ *     tags: [Users]
  *     security:
- *       - Bearer: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -227,20 +268,17 @@ router
  */
 router
   .route("/")
-  .get(authMiddleware, getUsers)
-  .post(authMiddleware, createUser);
+  .get(protect, admin, getUsers) // Only admin users can get all users
+  .post(protect, admin, createUser); // Only admin users can create a new user
 
-router.post("/forgot-password", forgotPassword);
-router.get("/reset-password/:token", getResetPasswordToken);
-router.post("/reset-password", resetPassword);
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/users/update/{id}:
  *   put:
  *     summary: Update user
- *     tags: [Auth]
+ *     tags: [Users]
  *     security:
- *       - Bearer: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -268,11 +306,17 @@ router.post("/reset-password", resetPassword);
  *         description: User updated successfully
  *       401:
  *         description: Not authorized
+ */
+router.put("/update/:id", protect, updateUser);
+
+/**
+ * @swagger
+ * /api/users/delete/{id}:
  *   delete:
  *     summary: Delete user
- *     tags: [Auth]
+ *     tags: [Users]
  *     security:
- *       - Bearer: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -286,17 +330,77 @@ router.post("/reset-password", resetPassword);
  *       401:
  *         description: Not authorized
  */
-router
-  .route("/:id")
-  .put(authMiddleware, updateUser)
-  .delete(authMiddleware, deleteUser);
+router.delete("/delete/:id", protect, admin, deleteUser);
+
+/**
+ * @swagger
+ * /api/users/forgot-password:
+ *   post:
+ *     summary: Forgot password
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset email sent
+ */
+router.post("/forgot-password", forgotPassword);
+
+/**
+ * @swagger
+ * /api/users/reset-password/{token}:
+ *   get:
+ *     summary: Get reset password token
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Reset password token
+ *     responses:
+ *       200:
+ *         description: Reset password token fetched successfully
+ */
+router.get("/reset-password/:token", getResetPasswordToken);
+
+/**
+ * @swagger
+ * /api/users/reset-password:
+ *   post:
+ *     summary: Reset password
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ */
+router.post("/reset-password", resetPassword);
 
 /**
  * @swagger
  * /api/users/logout:
  *   post:
  *     summary: Logout user
- *     tags: [Auth]
+ *     tags: [Users]
  *     responses:
  *       200:
  *         description: User logged out successfully

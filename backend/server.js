@@ -12,6 +12,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import path from "path";
+import webhookRoutes from "./routes/webhookRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -55,6 +56,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/foods", foodRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/stripe", webhookRoutes);
 
 // Error handling middleware
 app.use(notFound);

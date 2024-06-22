@@ -6,6 +6,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import { sendPasswordResetEmail } from "../utils/sendEmail.js";
 import mongoose from "mongoose";
+import { OAuth2Client } from "google-auth-library";
 
 // Create token
 const createToken = (id) => {
@@ -13,6 +14,10 @@ const createToken = (id) => {
     expiresIn: "30d", // Token expiry
   });
 };
+
+// Google OAuth2 Client
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, isAdmin, adminKey } = req.body;
@@ -117,6 +122,44 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+// Google login user
+const googleLogin = asyncHandler(async (req, res) => {
+  const { tokenId } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub, email, name } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = new User({ googleId: sub, email, name });
+      await user.save();
+    }
+
+    const token = createToken(user._id);
+
+    res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ success: false, message: "Invalid token" });
+  }
+});
+
 // Get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
@@ -151,8 +194,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      // isAdmin: updatedUser.isAdmin,
-      token: createToken(updatedUser._id),
+      isAdmin: updatedUser.isAdmin,
     });
   } else {
     res.status(404).json({ message: "User not found" });
@@ -214,40 +256,38 @@ const createUser = asyncHandler(async (req, res) => {
   }
 });
 
-// Update user (admin only)
 const updateUser = asyncHandler(async (req, res) => {
-  const userId = req.params.id;
+  const { id } = req.params; // Extracting user ID from request parameters
 
-  // Log the received ID for debugging
-  console.log("Received ID:", userId);
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: "Invalid user ID format" });
-  }
-  const user = await User.findById(userId);
+  const user = await User.findById(id);
 
   if (user) {
+    // Check if the new email already exists
+    if (req.body.email && req.body.email !== user.email) {
+      const emailExists = await User.findOne({ email: req.body.email });
+      if (emailExists) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+    }
+
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    user.isAdmin =
-      req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin;
 
     if (req.body.password) {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(req.body.password, salt);
+      user.password = req.body.password;
     }
 
     const updatedUser = await user.save();
 
-    res.json({
+    res.status(200).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
-      token: createToken(updatedUser._id),
+      role: updatedUser.role, // Assuming you have a role field
     });
   } else {
-    res.status(404).json({ message: "User not found" });
+    res.status(404);
+    throw new Error("User not found");
   }
 });
 
@@ -280,10 +320,15 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 // Get all users (admin only)
-const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
-  res.json(users);
-});
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json({ success: true, data: users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error fetching users" });
+  }
+};
 
 const generateResetToken = () => {
   return crypto.randomBytes(32).toString("hex");
@@ -365,6 +410,7 @@ export {
   getResetPasswordToken,
   resetPassword,
   createUser,
+  googleLogin,
   updateUser,
   deleteUser,
 };

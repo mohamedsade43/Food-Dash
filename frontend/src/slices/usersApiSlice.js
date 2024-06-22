@@ -28,10 +28,23 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     updateUser: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `${USERS_URL}/update/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    updateUserProfile: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/profile`,
         method: "PUT",
         body: data,
+      }),
+    }),
+    deleteUser: builder.mutation({
+      query: (id) => ({
+        url: `${USERS_URL}/delete/${id}`,
+        method: "DELETE",
       }),
     }),
     addFood: builder.mutation({
@@ -48,16 +61,34 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getImage: builder.mutation({
-      endpoint: (builder) => ({
+      query: () => ({
         url: `${FOOD_IMAGE}/image`,
         method: "GET",
       }),
     }),
-
     deleteFood: builder.mutation({
       query: (id) => ({
         url: `${FOOD_URL}/${id}`,
         method: "DELETE",
+      }),
+    }),
+    updateFood: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `${FOOD_URL}/update/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    getCategories: builder.query({
+      query: () => ({
+        url: `${FOOD_URL}/categories`,
+        method: "GET",
+      }),
+    }),
+    getUsers: builder.query({
+      query: () => ({
+        url: `${USERS_URL}`,
+        method: "GET",
       }),
     }),
     placeOrder: builder.mutation({
@@ -67,10 +98,37 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getOrders: builder.query({
+      query: () => ({
+        url: `${ORDER_URL}/list`,
+        method: "GET",
+      }),
+    }),
     getOrder: builder.query({
       query: (id) => ({
         url: `${ORDER_URL}/${id}`,
         method: "GET",
+      }),
+    }),
+    getUserOrders: builder.query({
+      query: (userId) => ({
+        url: `${ORDER_URL}/user`,
+        method: "POST",
+        body: { userId },
+      }),
+    }),
+    updateOrderStatus: builder.mutation({
+      query: (data) => ({
+        url: `${ORDER_URL}/update-status`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    verifyOrder: builder.mutation({
+      query: (data) => ({
+        url: `${ORDER_URL}/verify`,
+        method: "POST",
+        body: data,
       }),
     }),
     addToCart: builder.mutation({
@@ -93,6 +151,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/forgot-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -101,13 +166,22 @@ export const {
   useLogoutMutation,
   useRegisterMutation,
   useUpdateUserMutation,
+  useUpdateUserProfileMutation, // Added the useUpdateUserProfileMutation export
+  useDeleteUserMutation,
   useAddFoodMutation,
   useGetFoodQuery,
+  useGetCategoriesQuery,
   useDeleteFoodMutation,
+  useUpdateFoodMutation,
+  useGetUsersQuery, // Added the getUsers query
   usePlaceOrderMutation,
   useGetOrderQuery,
+  useGetOrdersQuery,
+  useGetUserOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useVerifyOrderMutation,
   useAddToCartMutation,
   useGetCartQuery,
   useRemoveFromCartMutation,
-  useForgotUserMutation,
+  useForgotPasswordMutation,
 } = usersApiSlice;

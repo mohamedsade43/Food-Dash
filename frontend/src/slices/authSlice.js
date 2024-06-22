@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { clearCart } from "./cartReducer";
 
 const initialState = {
   userInfo: localStorage.getItem("userInfo")
@@ -28,5 +29,15 @@ const authSlice = createSlice({
 });
 
 export const { setCredentials, logout } = authSlice.actions;
+
+export const logoutUser = () => async (dispatch) => {
+  dispatch(logout());
+  dispatch(clearCart()); // Clear cart on logout
+};
+
+export const loginUser = (userData) => async (dispatch) => {
+  dispatch(setCredentials(userData));
+  dispatch(clearCart()); // Clear cart on login to handle new user session
+};
 
 export default authSlice.reducer;

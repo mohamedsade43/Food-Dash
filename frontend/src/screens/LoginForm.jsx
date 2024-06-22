@@ -22,7 +22,43 @@ const LoginForm = () => {
     if (userInfo) {
       navigate("/");
     }
+
+    // Initialize Google Sign-In
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleLogin,
+    });
+
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      { theme: "outline", size: "large" }
+    );
+
+    window.google.accounts.id.prompt();
   }, [navigate, userInfo]);
+
+  const handleGoogleLogin = async (response) => {
+    try {
+      const res = await fetch("/api/users/google-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tokenId: response.credential }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setCredentials(data)); // Set credentials in Redux store
+        navigate("/");
+        toast.success("Logged in with Google!");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Google login failed!");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,74 +74,70 @@ const LoginForm = () => {
 
   return (
     <>
-     <Header />
-   
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
-     
-      <div className="w-full max-w-sm p-8 space-y-6 bg-background rounded-lg shadow-2xl">
-        <h2 className="text-3xl font-bold text-center text-red-600">
-          Login
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="email"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <div className="flex justify-between">
-              <label className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <Link
-                to={"/forgot-password"}
-                className="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline transition-all duration-300 ease-in-out px-2 py-1"
-              >
-                Forgot Password
-              </Link>
-            </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
+      <Header />
+      <div className="flex items-center justify-center min-h-screen bg-background text-text dark:bg-background-dark dark:text-text-dark p-4">
+        <div className="w-full max-w-sm p-8 space-y-6 bg-background dark:bg-gray-800 rounded-lg shadow-2xl">
+          <h2 className="text-3xl font-bold text-center text-red-600 dark:text-red-400">
             Login
-          </button>
-        </form>
-        <div className="text-center text-gray-500">or login with provider</div>
-        <button className="flex items-center justify-center w-full py-3 mt-2 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none">
-          <img
-            src="/path/to/google-logo.png" // Replace with the actual path to Google logo
-            alt="Google logo"
-            className="w-6 h-6 mr-2"
-          />
-          <span>Login with Google</span>
-        </button>
-        <p className="text-sm text-center text-gray-600">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="font-medium text-red-600 hover:underline"
-          >
-            Register
-          </Link>
-        </p>
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="email"
+                className="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
+              />
+            </div>
+            <div>
+              <div className="flex justify-between">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-600 font-medium text-sm hover:underline transition-all duration-300 ease-in-out px-2 py-1"
+                >
+                  Forgot Password
+                </Link>
+              </div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="password"
+                className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-400"
+            >
+              Login
+            </button>
+          </form>
+          <div className="text-center text-gray-500 dark:text-gray-300">
+            or login with provider
+          </div>
+          <div
+            id="googleSignInDiv"
+            className="flex items-center justify-center w-full py-3 mt-2"
+          ></div>
+          <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="font-medium text-red-600 dark:text-red-400 hover:underline"
+            >
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };

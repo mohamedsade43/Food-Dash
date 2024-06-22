@@ -6,6 +6,7 @@ import { setCredentials } from "../slices/authSlice";
 import { useRegisterMutation } from "../slices/usersApiSlice";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import google from "../assets/google.png";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -13,6 +14,8 @@ const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminKey, setAdminKey] = useState("");
 
   const { userInfo } = useSelector((state) => state.auth);
   const [register] = useRegisterMutation();
@@ -24,9 +27,44 @@ const RegisterForm = () => {
     if (userInfo) {
       navigate("/");
     }
+
+    // Initialize Google Sign-In
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleLogin,
+    });
+
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      { theme: "outline", size: "large" }
+    );
+
+    window.google.accounts.id.prompt();
   }, [navigate, userInfo]);
 
-  //handling image for profile user
+  const handleGoogleLogin = async (response) => {
+    try {
+      const res = await fetch("/api/users/google-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tokenId: response.credential }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setCredentials({ ...data }));
+        navigate("/");
+        toast.success("Registered with Google!");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Google registration failed!");
+    }
+  };
+
   const handleFileChange = (e) => {
     setProfilePicture(e.target.files[0]);
   };
@@ -45,6 +83,10 @@ const RegisterForm = () => {
         if (profilePicture) {
           formData.append("profilePicture", profilePicture);
         }
+        if (isAdmin) {
+          formData.append("isAdmin", true);
+          formData.append("adminKey", adminKey);
+        }
 
         const res = await register(formData).unwrap();
         dispatch(setCredentials(res));
@@ -58,21 +100,20 @@ const RegisterForm = () => {
   return (
     <>
       <Header />
-
-      <div className="flex items-center justify-center min-h-screen bg-bacgkround p-4">
-        <div className="w-full max-w-sm p-8 space-y-6 bg-background rounded-lg shadow-2xl">
-          <h2 className="text-3xl font-bold text-center text-red-600">
+      <div className="flex items-center justify-center min-h-screen bg-background text-text dark:bg-background-dark dark:text-text-dark p-4">
+        <div className="w-full max-w-sm p-8 space-y-6 bg-background dark:bg-gray-800 rounded-lg shadow-2xl">
+          <h2 className="text-3xl font-bold text-center text-red-600 dark:text-red-400">
             Register
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <input
-                type="name"
+                type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                placeholder="name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Name"
+                className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <div>
@@ -81,8 +122,8 @@ const RegisterForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Email"
+                className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <div>
@@ -91,8 +132,8 @@ const RegisterForm = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Password"
+                className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <div>
@@ -101,8 +142,8 @@ const RegisterForm = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                placeholder="confirm password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Confirm Password"
+                className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <div>
@@ -110,27 +151,46 @@ const RegisterForm = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={isAdmin}
+                onChange={() => setIsAdmin(!isAdmin)}
+                className="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-400"
+              />
+              <label
+                htmlFor="isAdmin"
+                className="ml-2 block text-sm text-gray-900 dark:text-gray-300"
+              >
+                Register as Admin
+              </label>
+            </div>
+            {isAdmin && (
+              <div>
+                <input
+                  type="text"
+                  value={adminKey}
+                  onChange={(e) => setAdminKey(e.target.value)}
+                  required
+                  placeholder="Admin Key"
+                  className="w-full px-4 py-3 border bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
+                />
+              </div>
+            )}
             <button
               type="submit"
-              className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-400"
             >
               Register
             </button>
           </form>
-          <div className="text-center text-gray-500">
-            or login with provider
-          </div>
-          <button className="flex items-center justify-center w-full py-3 mt-2 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none">
-            <img
-              src="/path/to/google-logo.png" // Replace with the actual path to Google logo
-              alt="Google logo"
-              className="w-6 h-6 mr-2"
-            />
-            <span>Login with Google</span>
-          </button>
+          <div
+            id="googleSignInDiv"
+            className="flex items-center justify-center w-full py-3 mt-2"
+          ></div>
         </div>
       </div>
       <Footer />

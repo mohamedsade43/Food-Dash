@@ -17,12 +17,16 @@ const ContactForm = () => {
   return (
     <>
       <Header />
-      <div className="flex items-center justify-center min-h-screen bg-background p-4">
-        <div className="w-full max-w-sm p-8 space-y-6 bg-background rounded-lg shadow-2xl">
-          <h2 className="text-3xl font-bold text-center text-red-600">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-4">
+        <div className="w-full mt-24 max-w-lg p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl">
+          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-gray-100">
             Contact Us
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <p className="text-center text-gray-600 dark:text-gray-300">
+            We'd love to hear from you! Please fill out the form below to get in
+            touch.
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <input
                 type="text"
@@ -30,7 +34,7 @@ const ContactForm = () => {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-4 py-3 border bg-gray-200 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <div>
@@ -40,7 +44,7 @@ const ContactForm = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-4 py-3 border bg-gray-200 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <div>
@@ -49,12 +53,13 @@ const ContactForm = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 required
                 placeholder="Message"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                rows="5"
+                className="w-full px-4 py-3 border bg-gray-200 dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
               />
             </div>
             <button
               type="submit"
-              className="w-full py-3 mt-4 text-white bg-red-500 rounded-lg shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              className="w-full py-3 mt-4 text-white bg-red-600 rounded-lg shadow-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-400"
             >
               Send Message
             </button>

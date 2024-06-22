@@ -1,0 +1,34 @@
+/* App.css */
+:root {
+    --background-light: #ffffff;
+    --text-light: #000000;
+    --background-dark: #181818;
+    --text-dark: #ffffff;
+    --primary-light: #f13a01;
+    --primary-dark: #ffa07a;
+  }
+  
+  [data-theme='light'] {
+    --background: var(--background-light);
+    --text: var(--text-light);
+    --primary: var(--primary-light);
+  }
+  
+  [data-theme='dark'] {
+    --background: var(--background-dark);
+    --text: var(--text-dark);
+    --primary: var(--primary-dark);
+  }
+  
+  .bg-background {
+    background-color: var(--background);
+  }
+  
+  .text-text {
+    color: var(--text);
+  }
+  
+  .text-primary {
+    color: var(--primary);
+  }
+  

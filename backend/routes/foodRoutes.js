@@ -3,6 +3,8 @@ import {
   listFood,
   addFood,
   removeFood,
+  updateFood,
+  getCategories,
 } from "../controllers/foodController.js";
 import upload from "../middleware/uploadMiddleware.js";
 
@@ -83,5 +85,46 @@ router.post("/add", upload.single("image"), addFood);
  *         description: Error removing food item
  */
 router.delete("/:id", removeFood);
+
+/**
+ * @swagger
+ * /api/foods/update/{id}:
+ *   put:
+ *     summary: Update a food item
+ *     tags: [Foods]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The food item ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               category:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Food item updated
+ *       500:
+ *         description: Error updating food item
+ */
+router.put("/update/:id", upload.single("image"), updateFood);
+
+router.get("/categories", getCategories);
 
 export default router;
