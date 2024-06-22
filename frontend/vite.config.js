@@ -9,8 +9,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "https://food-dash-backend.onrender.com",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // Ensure path is correctly rewritten
+        changeOrigin: true,  // Ensure path is correctly rewritten
       },
     },
   },
