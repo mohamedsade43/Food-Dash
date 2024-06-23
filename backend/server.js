@@ -2,9 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import cors from "cors";
+import cors from "cors"; // Import CORS middleware
 import dotenv from "dotenv";
-dotenv.config();
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import foodRoutes from "./routes/foodRoutes.js";
@@ -17,10 +16,19 @@ import webhookRoutes from "./routes/webhookRoutes.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
+dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); // Add this line
-app.use(cors());
+app.use(cookieParser());
+
+// CORS configuration
+const corsOptions = {
+  origin: ["https://food-dash-backend.onrender.com", "http://localhost:3000"], // Update with your frontend URL(s)
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Required for cookies, authorization headers with HTTPS
+};
+
+app.use(cors(corsOptions));
 
 // Swagger configuration
 const swaggerOptions = {
