@@ -9,7 +9,12 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "https://food-dash-backend.onrender.com",
-        changeOrigin: true,  
+        changeOrigin: true,
+        headers: {
+          "Access-Control-Allow-Origin": "*", // Adjust this to your backend's CORS policy
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
       },
     },
   },
