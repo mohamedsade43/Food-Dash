@@ -11,7 +11,7 @@ export default defineConfig({
         target: "https://food-dash-backend.onrender.com",
         changeOrigin: true,
         headers: {
-          "Access-Control-Allow-Origin": "*", // Adjust this to your backend's CORS policy
+          "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },

@@ -13,23 +13,23 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import path from "path";
 import webhookRoutes from "./routes/webhookRoutes.js";
 
+dotenv.config();
+
 const app = express();
 const port = process.env.PORT || 5000;
 
-dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // CORS configuration
 const corsOptions = {
-  origin: ["https://foodify-g7r1.onrender.com", "http://localhost:3000"], // Update with your frontend URL(s)
+  origin: ["https://foodify-g7r1.onrender.com", "http://localhost:3000"], // Frontend URLs
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Required for cookies, authorization headers with HTTPS
 };
 
 app.use(cors(corsOptions));
-
 
 // Swagger configuration
 const swaggerOptions = {
@@ -53,6 +53,7 @@ const swaggerOptions = {
   },
   apis: ["./routes/*.js"], // Path to API docs
 };
+
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
