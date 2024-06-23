@@ -40,7 +40,7 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API documentation for food delivery operations",
     },
-    servers: [{ url: "https://food-dash-backend.onrender.com" }],
+    servers: [{ url: `http://localhost:${port}` }],
     components: {
       securitySchemes: {
         Bearer: {
