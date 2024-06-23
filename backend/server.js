@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 // CORS configuration
 const corsOptions = {
-  origin: ["https://food-dash-backend.onrender.com", "http://localhost:3000"], // Update with your frontend URL(s)
+  origin: ["https://foodify-g7r1.onrender.com", "http://localhost:3000"], // Update with your frontend URL(s)
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Required for cookies, authorization headers with HTTPS
 };
