@@ -1,1 +1,0 @@
-import{j as r}from"./index-V3xU5zvR.js";const t=()=>r.jsx("div",{className:"flex items-center justify-center min-h-screen bg-background text-text dark:bg-background-dark dark:text-text-dark",children:r.jsx("div",{className:"animate-spin rounded-full h-32 w-32 border-t-4 border-primary dark:border-primary-dark",role:"status"})});export{t as L};
