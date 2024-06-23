@@ -30,6 +30,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+
 // Swagger configuration
 const swaggerOptions = {
   definition: {
@@ -39,7 +40,7 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API documentation for food delivery operations",
     },
-    servers: [{ url: `http://localhost:${port}` }],
+    servers: [{ url: "https://food-dash-backend.onrender.com" }],
     components: {
       securitySchemes: {
         Bearer: {
