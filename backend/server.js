@@ -40,7 +40,7 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API documentation for food delivery operations",
     },
-    servers: [{ url: "https://food-dash-backend.onrender.com" }],
+    servers: [{ url: "https://foodify-g7r1.onrender.com" }],
     components: {
       securitySchemes: {
         Bearer: {
