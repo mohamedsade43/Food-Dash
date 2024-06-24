@@ -29,7 +29,6 @@ const corsOptions = {
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // Required for cookies, authorization headers with HTTPS
 };
-
 app.use(cors(corsOptions));
 
 // Swagger configuration
@@ -41,10 +40,12 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API documentation for food delivery operations',
     },
-    servers: [{ url: 'https://food-dash-backend.onrender.com' }],
+    servers: [
+      { url: 'https://food-dash-backend.onrender.com' } // Update with your backend URL
+    ],
     components: {
       securitySchemes: {
-        Bearer: {
+        BearerAuth: {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
